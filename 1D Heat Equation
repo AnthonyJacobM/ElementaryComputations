@@ -1,0 +1,79 @@
+"1-D Heat Equation"
+
+import numpy as np
+from numpy import pi
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+plt.style.use('dark_background')
+fig = plt.figure()
+fig.set_dpi(100)
+ax1 = fig.add_subplot(1,1,1)
+"Thermal Conductivity: K units: cal/(cm * sec * DegC)"
+K = 0.45
+"Density: Rho units: g/cm^3"
+Rho1 = 10.6
+Rho2= 5.0
+"Specific Heat: Sigma units: cal/(g * DegC)"
+Sigma1 = 0.056
+Sigma2 = 0.050
+"Scaling Factor"
+Scale = 5
+"Length of Rod: L units: m"
+L = 5
+"Thermal Diffusivity Constant: c^2 = K/(Sigma*Rho) units: c^2: cm^2/s"
+c1 = np.sqrt(K/(Sigma1*Rho1))
+c2 = np.sqrt(K/(Sigma2*Rho2))
+"Auxillary Variable: Lambda = c*pi/L"
+Lambda1 = c1*pi/L
+Lambda2 = c2*pi/L
+"1-D Heat Equation: du/dt = c^2 * d^2u/dx^2 st c^2 = K/(Sigma * Rho)"
+"Fixed Temperature at the ends: u(0,t) = 0 = u(L,t)"
+x0 = np.linspace(0, L, 1000)
+t0 = 0
+temp0 = 0 # Temperature of Rod before heating
+dt = 0.01
+"Heat Equation"
+def u1(x,t):
+    return temp0 + Scale*np.exp(-t*Lambda1**2)*np.sin(pi*x/L)
+def u2(x,t):
+    return temp0 + Scale*np.exp(-t*Lambda2**2)*np.sin(pi*x/L)
+"Gradient of the Temperature"
+"Temperature flows in direction opposite of the Gradient"
+def grad_u1(x,t):
+                                #du/dx                                    #du/dt
+    return Scale*np.array([(pi/L)*np.exp(-t*Lambda1**2)*np.cos(pi*x/L), -2*Lambda1*np.exp(-t*Lambda1**2)*np.sin(pi*x/L)])
+def grad_u2(x,t):
+                                #du/dx                                    #du/dt
+    return Scale*np.array([(pi/L)*np.exp(-t*Lambda2**2)*np.cos(pi*x/L), -2*Lambda2*np.exp(-t*Lambda2**2)*np.sin(pi*x/L)])
+s1 = []
+s2 = []
+t = []
+" The plot shows temperature evol. wrt time at each x in rod st ends of rod"
+" are kept to fixed temp0, the rod is heated in one spot then cools"
+for i in range(1000):
+    value1 = u1(x0,t0) + grad_u1(x0,t0)[1]*dt
+    value2 = u2(x0,t0) + grad_u2(x0,t0)[1]*dt
+    t.append(t0)
+    t0 = t0 + dt
+    s1.append(value1)
+    s2.append(value2)
+
+k = 0
+def animate(i):
+    global k
+    x1 = s1[k]
+    x2 = s2[k]
+    k += 1
+    ax1.clear()
+    plt.plot(x0,x1,color='blue',label='Temperature at R1')
+    plt.plot(x0,x2,color='red',label='Temperature at R2')
+    plt.plot(0,0,color='cyan',label='Elapsed Time '+str(round(t[k],2)))
+    plt.grid(False)
+    plt.ylim([temp0,2*Scale])
+    plt.xlim([0,L])
+    plt.xlabel("Position of the Rod")
+    plt.ylabel("Temperature of the Rod")
+    plt.title('Heat Equation')
+    plt.legend()
+anim = animation.FuncAnimation(fig,animate,frames=360,interval=20)
+plt.show()
