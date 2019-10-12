@@ -1,0 +1,164 @@
+"1-D Wave Equation"
+
+import numpy as np
+from numpy import pi
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+plt.style.use('dark_background')
+fig = plt.figure()
+fig.set_dpi(100)
+ax1 = fig.add_subplot(1,1,1)
+"Tension T in Newtons i.e. kg*m/s^2"
+T1 = 2
+T2 = 2
+"Density Mass * Unit Length denoted Rho = kg*m"
+Rho1 = 2
+Rho2 = 1
+"Wave Speed: c^2 = T/Rho"
+c1 = np.sqrt((T1/Rho1))
+c2 = np.sqrt((T2/Rho2))
+"Length of the String:"
+L = pi
+"X Axis"
+x0 = np.linspace(-L,L,10000)
+"Initial Time"
+t0 = 0
+"Time Increment"
+dt = 0.05
+"Wave Equation Solution Dalmberts:"
+"1/2*(f(x+ct)+f(x-ct)) + 1/(2c)int{x-ct,x+ct}(g(s)ds"
+"u(x,0) = f(x) --- Initial Profile Displacement"
+"du/dt(x,0) = g(x) --- Initial Profile Velocity"
+
+def u1(x,t,c):
+    return 0.5*(np.sin((pi/L)*(x+c*t)) + np.sin((pi/L)*(x-c*t)))
+def u3(x,t):
+    return 0.5*(np.sin(x+t) + np.sin(x-t))
+def Phi(x):
+    return np.cos(pi*x/L)**3
+def u2(x,t,c):
+    return 0.5*(Phi(x+c*t)+Phi(x-c*t))
+"Est Vector that stores a solution at xi,ti for u to use for animation"
+s1 = []
+s2 = []
+s3 = []
+s4 = []
+s5 = []
+s1Left = []
+s1Right = []
+
+for i in range(500): #Increment solutions for 1000 seconds
+    value1 = u1(x0,t0,c1)
+    value2 = u1(x0,t0,c2)
+   # value3 = u2(x0,t0,c1)
+   # value4 = u2(x0,t0,c2)
+   # sin1Left = 0.5*np.sin((pi/L)*(x0+t0*c1))
+   # sin1Right = 0.5*np.sin((pi/L)*(x0-t0*c1))
+    t0 = t0 + dt
+    s1.append(value1)
+    s2.append(value2)
+   # s3.append(value3)
+   # s4.append(value4)
+   # s1Left.append(sin1Left)
+   # s1Right.append(sin1Right)
+    
+k = 0
+def animate(i):
+    global k
+    x1 = s1[k] # Append ith frame info: indepvar, depvar for two strings
+    x2 = s2[k]
+    k+=1 # Increment to next frame
+    ax1.clear()
+    plt.plot(x0,x1,color='cyan',label='String A')
+    plt.plot(x0,x2,color='magenta',label='String B')
+    plt.grid(False)
+    plt.ylim([-2,2])
+    plt.xlim([0,L])
+    plt.title("The One Dimensional Wave Equation")
+    plt.xlabel("Length")
+    plt.ylabel("Vertical Displacement")
+    plt.legend()
+anim = animation.FuncAnimation(fig,animate,frames=360,interval=10)
+plt.show()
+plt.clf()
+plt.close()
+
+for i in range(500): #Increment solutions for 1000 seconds
+    value1 = u1(x0,t0,c1)
+    value2 = u1(x0,t0,c2)
+    value3 = u2(x0,t0,c1)
+    value4 = u2(x0,t0,c2)
+    sin1Left = 0.5*np.sin((pi/L)*(x0+t0*c1))
+    sin1Right = 0.5*np.sin((pi/L)*(x0-t0*c1))
+    t0 = t0 + dt
+    s1.append(value1)
+    s2.append(value2)
+    s3.append(value3)
+    s4.append(value4)
+    s1Left.append(sin1Left)
+    s1Right.append(sin1Right)
+    k = 0
+def animate(i):
+    global k
+    x1 = s3[k] # Append ith frame info: indepvar, depvar for two strings
+    x2 = s4[k]
+    k+=1 # Increment to next frame
+    ax1.clear()
+    plt.plot(x0,x1,color='blue',label='String A')
+    plt.plot(x0,x2,color='red',label='String B')
+    plt.grid(False)
+    plt.ylim([-2,2])
+    plt.xlim([-L,L])
+    plt.title("The One Dimensional Wave Equation")
+    plt.xlabel("Length")
+    plt.ylabel("Vertical Displacement")
+    plt.legend()
+anim = animation.FuncAnimation(fig,animate,frames=360,interval=20)
+#plt.show()
+
+
+
+
+for i in range(500): #Increment solutions for 1000 seconds
+    value1 = u1(x0,t0,c1)
+    value2 = u1(x0,t0,c2)
+    value3 = u2(x0,t0,c1)
+    value4 = u2(x0,t0,c2)
+    value5 = u3(x0, t0)
+    sin1Left = 0.5*np.sin((pi/L)*(x0+t0*c1))
+    sin1Right = 0.5*np.sin((pi/L)*(x0-t0*c1))
+    sinLeft = 0.5*np.sin(x0+t0)
+    sinRight = 0.5*np.sin(x0-t0)
+    t0 = t0 + dt
+    s1.append(value1)
+    s2.append(value2)
+    s3.append(value3)
+    s4.append(value4)
+    s5.append(value5)
+    s1Left.append(sin1Left)
+    s1Right.append(sin1Right)
+k = 0
+def animate(i):
+    global k
+    x1 = s1[k] # Append ith frame info: indepvar, depvar for two strings
+    x2 = s2[k]
+    x3 = s3[k]
+    x4 = s4[k]
+    x5 = s5[k]
+    x1R = s1Right[k]
+    x1L = s1Left[k]
+    k+=1 # Increment to next frame
+    ax1.clear()
+    plt.plot(x0,x1L,color='blue',label='String Shifted Left')
+    plt.plot(x0,x1R,color='red',label='String Shifted Right')
+    plt.plot(x0,x1,color='green',label='String')
+    plt.grid(False)
+    plt.ylim([-2,2])
+    plt.xlim([-3L,3L])
+    plt.title("Superposition of Waves")
+    plt.xlabel("Length")
+    plt.ylabel("Vertical Displacement")
+    plt.legend()
+anim = animation.FuncAnimation(fig,animate,frames=360,interval=20)
+plt.show()
+    
